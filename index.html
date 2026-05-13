@@ -642,7 +642,6 @@ async function getBotReply() {
   document.getElementById('send-btn').disabled = true;
   showTyping();
   try {
-    console.log('HISTORY------------------',history);
     console.log('SYSTEM------------------',SYSTEM);
     const res = await fetch('/api/chat', {
   method: 'POST',
