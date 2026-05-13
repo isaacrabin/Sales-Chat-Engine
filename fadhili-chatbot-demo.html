@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fadhili — AI Insurance Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --lion-green: #005B41;
+  --lion-gold: #C8962E;
+  --lion-gold-light: #E8B84B;
+  --lion-dark: #0D1F17;
+  --lion-mid: #1A3328;
+  --lion-surface: #1F3D2E;
+  --lion-surface2: #254836;
+  --lion-border: rgba(200,150,46,0.18);
+  --lion-border2: rgba(200,150,46,0.32);
+  --text: #F5F0E8;
+  --text2: #B8C4BC;
+  --text3: #6B8A76;
+  --accent: #C8962E;
+  --accent-dim: rgba(200,150,46,0.12);
+  --success: #4CAF82;
+  --danger: #E05252;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Outfit', sans-serif;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+html, body {
+  height: 100%; min-height: 100vh;
+  background: var(--lion-dark);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  overflow: hidden;
+}
+
+/* Background texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(0,91,65,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 90% 100%, rgba(200,150,46,0.12) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='0.6' fill='rgba(200,150,46,0.07)'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+.app {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: 70px 1fr;
+  height: 100vh;
+}
+
+/* ── Header ── */
+.header {
+  grid-column: 1 / -1;
+  background: rgba(13,31,23,0.95);
+  border-bottom: 1px solid var(--lion-border);
+  backdrop-filter: blur(12px);
+  display: flex; align-items: center; gap: 16px; padding: 0 28px;
+  position: relative;
+}
+.header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--lion-gold), transparent);
+}
+.logo-mark {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(200,150,46,0.3);
+}
+.logo-text { font-family: var(--font-display); }
+.logo-text .co { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
+.logo-text .tagline { font-size: 11px; color: var(--text3); letter-spacing: 0.5px; margin-top: -2px; }
+.header-divider { width: 1px; height: 30px; background: var(--lion-border); }
+.header-title { font-size: 13px; color: var(--text2); }
+.header-title strong { color: var(--lion-gold-light); display: block; font-size: 14px; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.live-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--success); background: rgba(76,175,130,0.1);
+  border: 1px solid rgba(76,175,130,0.25); border-radius: 100px; padding: 4px 12px;
+}
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(76,175,130,0.4); } 50% { box-shadow: 0 0 0 4px transparent; } }
+
+/* ── Left Panel ── */
+.left-panel {
+  background: rgba(26,51,40,0.6);
+  border-right: 1px solid var(--lion-border);
+  backdrop-filter: blur(8px);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.prospect-card {
+  padding: 20px;
+  border-bottom: 1px solid var(--lion-border);
+}
+.prospect-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--lion-gold); font-weight: 600; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.prospect-label::after { content: ''; flex: 1; height: 1px; background: var(--lion-border); }
+.pf { margin-bottom: 8px; }
+.pf-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+.pf-value { font-size: 13px; color: var(--text); }
+.pf-value.gold { color: var(--lion-gold-light); font-weight: 500; }
+.pf-empty { color: var(--text3); font-style: italic; font-size: 12px; }
+
+/* Stage tracker */
+.stage-section { padding: 16px 20px; border-bottom: 1px solid var(--lion-border); }
+.stage-title {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--lion-gold); font-weight: 600; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.stage-title::after { content: ''; flex: 1; height: 1px; background: var(--lion-border); }
+.stages { display: flex; flex-direction: column; gap: 4px; }
+.stage-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 8px; border-radius: 6px; transition: all 0.3s;
+}
+.stage-row.done { background: rgba(200,150,46,0.06); }
+.stage-row.active { background: rgba(200,150,46,0.12); }
+.stage-num {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  border: 1.5px solid rgba(255,255,255,0.1); color: var(--text3);
+  transition: all 0.3s;
+}
+.stage-row.done .stage-num { background: rgba(200,150,46,0.2); border-color: var(--lion-gold); color: var(--lion-gold); }
+.stage-row.active .stage-num { background: var(--lion-gold); border-color: var(--lion-gold); color: #0D1F17; }
+.stage-name-text { font-size: 12px; color: var(--text3); transition: color 0.3s; }
+.stage-row.done .stage-name-text { color: var(--text2); }
+.stage-row.active .stage-name-text { color: var(--lion-gold-light); font-weight: 600; }
+
+/* Product pills */
+.products-section { padding: 16px 20px; flex: 1; }
+.products-title {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--lion-gold); font-weight: 600; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.products-title::after { content: ''; flex: 1; height: 1px; background: var(--lion-border); }
+.product-pills { display: flex; flex-direction: column; gap: 6px; }
+.product-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  border: 1px solid transparent; transition: all 0.2s;
+  background: rgba(255,255,255,0.02);
+}
+.product-pill:hover { background: rgba(200,150,46,0.08); border-color: var(--lion-border); }
+.product-pill.selected { background: rgba(200,150,46,0.12); border-color: var(--lion-border2); }
+.pill-icon { font-size: 16px; width: 28px; text-align: center; }
+.pill-info { flex: 1; }
+.pill-name { font-size: 12px; font-weight: 500; color: var(--text); }
+.pill-age { font-size: 10px; color: var(--text3); }
+
+/* ── Main Chat ── */
+.chat-main {
+  display: flex; flex-direction: column;
+  background: transparent; overflow: hidden;
+}
+
+.chat-top {
+  padding: 14px 24px; border-bottom: 1px solid var(--lion-border);
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(13,31,23,0.4); backdrop-filter: blur(6px);
+}
+.bot-avatar {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--lion-green) 0%, var(--lion-gold) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 0 3px rgba(200,150,46,0.2);
+}
+.bot-info .bot-name { font-size: 15px; font-weight: 600; font-family: var(--font-display); }
+.bot-info .bot-desc { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.stage-chip {
+  margin-left: auto; font-size: 11px; font-weight: 600;
+  padding: 4px 12px; border-radius: 100px;
+  background: rgba(200,150,46,0.12); color: var(--lion-gold-light);
+  border: 1px solid rgba(200,150,46,0.25);
+  transition: all 0.4s;
+}
+.stage-chip.closed { background: rgba(76,175,130,0.12); color: var(--success); border-color: rgba(76,175,130,0.25); }
+
+.messages {
+  flex: 1; overflow-y: auto; padding: 24px;
+  display: flex; flex-direction: column; gap: 14px;
+  scroll-behavior: smooth;
+}
+.messages::-webkit-scrollbar { width: 4px; }
+.messages::-webkit-scrollbar-thumb { background: var(--lion-surface2); border-radius: 4px; }
+
+.msg { display: flex; gap: 10px; animation: msgIn 0.3s ease; }
+@keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.msg.user { flex-direction: row-reverse; align-self: flex-end; max-width: 72%; }
+.msg.bot { align-self: flex-start; max-width: 76%; }
+.msg.system-msg { align-self: center; max-width: 100%; width: 100%; justify-content: center; }
+
+.msg-av {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  margin-top: 2px;
+}
+.msg-av.bot-av {
+  background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
+  box-shadow: 0 0 0 2px rgba(200,150,46,0.2);
+}
+.msg-av.user-av { background: var(--lion-surface2); color: var(--text2); font-weight: 600; font-size: 11px; }
+
+.bubble {
+  padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.6;
+}
+.bot .bubble {
+  background: var(--lion-surface);
+  border: 1px solid var(--lion-border);
+  border-radius: 4px 16px 16px 16px;
+  color: var(--text);
+}
+.user .bubble {
+  background: linear-gradient(135deg, rgba(0,91,65,0.6), rgba(200,150,46,0.2));
+  border: 1px solid rgba(200,150,46,0.2);
+  border-radius: 16px 4px 16px 16px;
+  color: var(--text);
+}
+.msg-time { font-size: 10px; color: var(--text3); margin-top: 4px; }
+.user .msg-time { text-align: right; }
+
+/* Typing */
+.typing-wrap { display: flex; gap: 10px; align-self: flex-start; animation: msgIn 0.2s ease; }
+.typing-bubble {
+  padding: 14px 18px; background: var(--lion-surface); border: 1px solid var(--lion-border);
+  border-radius: 4px 16px 16px 16px;
+  display: flex; gap: 5px; align-items: center;
+}
+.typing-bubble span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--lion-gold);
+  opacity: 0.4; animation: typingDot 1.4s infinite;
+}
+.typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+.typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot { 0%,60%,100% { opacity: 0.3; transform: scale(1); } 30% { opacity: 1; transform: scale(1.3); } }
+
+/* ── Cards ── */
+.card {
+  background: var(--lion-surface);
+  border: 1px solid var(--lion-border);
+  border-radius: var(--radius); padding: 22px;
+  width: 100%; max-width: 520px;
+  margin: 0 auto;
+  animation: msgIn 0.35s ease;
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--lion-green), var(--lion-gold));
+}
+.card.quote-card { border-color: rgba(200,150,46,0.3); }
+.card.success-card { border-color: rgba(76,175,130,0.3); }
+.card.success-card::before { background: linear-gradient(90deg, var(--lion-green), var(--success)); }
+
+.card-eyebrow {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.card.quote-card .card-eyebrow { color: var(--lion-gold); }
+.card.success-card .card-eyebrow { color: var(--success); }
+.card-headline { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.card-sub { font-size: 13px; color: var(--text2); margin-bottom: 18px; }
+
+.quote-table { border-top: 1px solid var(--lion-border); padding-top: 14px; }
+.quote-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; }
+.quote-row .ql { color: var(--text2); }
+.quote-row .qr { color: var(--text); font-weight: 500; }
+.quote-row.total {
+  border-top: 1px solid var(--lion-border);
+  margin-top: 6px; padding-top: 12px;
+  font-size: 15px; font-weight: 600;
+}
+.quote-row.total .ql { color: var(--text); }
+.quote-row.total .qr { color: var(--lion-gold-light); font-size: 20px; font-family: var(--font-display); }
+
+.card-note {
+  margin-top: 14px; padding: 10px 12px;
+  background: rgba(200,150,46,0.06); border-radius: 8px;
+  border-left: 2px solid var(--lion-gold);
+  font-size: 12px; color: var(--text2); line-height: 1.5;
+}
+
+.card-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.btn {
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  padding: 10px 20px; border-radius: 10px; cursor: pointer;
+  border: 1px solid transparent; transition: all 0.2s; line-height: 1;
+}
+.btn-gold { background: var(--lion-gold); color: #0D1F17; border-color: var(--lion-gold); font-weight: 600; }
+.btn-gold:hover { background: var(--lion-gold-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200,150,46,0.3); }
+.btn-outline { background: transparent; color: var(--text2); border-color: var(--lion-border2); }
+.btn-outline:hover { color: var(--text); border-color: rgba(200,150,46,0.4); background: rgba(200,150,46,0.05); }
+.btn-green { background: rgba(76,175,130,0.15); color: var(--success); border-color: rgba(76,175,130,0.3); }
+.btn-green:hover { background: rgba(76,175,130,0.25); }
+
+/* Product selector cards */
+.product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.prod-card {
+  padding: 12px; border-radius: 10px; cursor: pointer;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--lion-border);
+  transition: all 0.2s; text-align: center;
+}
+.prod-card:hover { background: rgba(200,150,46,0.08); border-color: var(--lion-border2); transform: translateY(-1px); }
+.prod-card-icon { font-size: 22px; margin-bottom: 4px; }
+.prod-card-name { font-size: 12px; font-weight: 500; color: var(--text); line-height: 1.3; }
+
+/* Input */
+.input-area {
+  padding: 16px 24px;
+  border-top: 1px solid var(--lion-border);
+  background: rgba(13,31,23,0.5); backdrop-filter: blur(6px);
+}
+.input-row {
+  display: flex; align-items: flex-end; gap: 10px;
+  background: var(--lion-surface); border: 1px solid var(--lion-border);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  transition: border-color 0.2s;
+}
+.input-row:focus-within { border-color: rgba(200,150,46,0.4); }
+.chat-textarea {
+  flex: 1; background: none; border: none; outline: none;
+  font-family: var(--font-body); font-size: 14px; color: var(--text);
+  resize: none; min-height: 22px; max-height: 120px; line-height: 1.5;
+}
+.chat-textarea::placeholder { color: var(--text3); }
+.send-btn {
+  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; box-shadow: 0 2px 8px rgba(200,150,46,0.2);
+}
+.send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 14px rgba(200,150,46,0.35); }
+.send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.send-btn svg { width: 16px; height: 16px; fill: white; }
+.input-hint {
+  font-size: 11px; color: var(--text3); text-align: center;
+  margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.fadhili-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(200,150,46,0.08); border: 1px solid var(--lion-border);
+  border-radius: 4px; padding: 1px 6px; font-size: 10px; color: var(--lion-gold);
+}
+
+/* Ineligible banner */
+.ineligible-card {
+  background: rgba(224,82,82,0.08); border: 1px solid rgba(224,82,82,0.2);
+  border-radius: var(--radius); padding: 18px 22px; max-width: 520px; margin: 0 auto;
+  animation: msgIn 0.3s ease;
+}
+.ineligible-card::before {
+  content: ''; display: block; width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--danger), transparent);
+  margin-bottom: 14px; border-radius: 2px;
+}
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: var(--lion-surface); border: 1px solid var(--lion-border2);
+  border-radius: 10px; padding: 12px 18px; font-size: 13px;
+  display: flex; align-items: center; gap: 10px;
+  transform: translateY(80px); opacity: 0; transition: all 0.3s;
+  box-shadow: var(--shadow); max-width: 300px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* Welcome overlay */
+.welcome {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(13,31,23,0.92); backdrop-filter: blur(16px);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.5s;
+}
+.welcome.hidden { opacity: 0; pointer-events: none; }
+.welcome-box {
+  text-align: center; max-width: 480px; padding: 24px;
+  animation: welcomeIn 0.6s cubic-bezier(.16,1,.3,1);
+}
+@keyframes welcomeIn { from { opacity: 0; transform: translateY(30px) scale(0.97); } to { opacity: 1; transform: none; } }
+.welcome-icon {
+  width: 80px; height: 80px; border-radius: 24px; margin: 0 auto 20px;
+  background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px;
+  box-shadow: 0 0 0 12px rgba(200,150,46,0.08), 0 0 0 24px rgba(200,150,46,0.04);
+}
+.welcome-title { font-family: var(--font-display); font-size: 30px; font-weight: 700; margin-bottom: 8px; }
+.welcome-sub { font-size: 15px; color: var(--text2); margin-bottom: 28px; line-height: 1.6; }
+.welcome-products {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 28px;
+}
+.wp { background: rgba(255,255,255,0.04); border: 1px solid var(--lion-border); border-radius: 10px; padding: 10px 8px; font-size: 12px; color: var(--text2); }
+.wp .wi { font-size: 20px; display: block; margin-bottom: 4px; }
+.start-btn {
+  font-family: var(--font-body); font-size: 15px; font-weight: 600;
+  padding: 14px 40px; border-radius: var(--radius-sm); cursor: pointer;
+  background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
+  color: white; border: none;
+  box-shadow: 0 4px 20px rgba(200,150,46,0.3);
+  transition: all 0.2s;
+}
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,150,46,0.4); }
+.disclaimer { font-size: 11px; color: var(--text3); margin-top: 16px; line-height: 1.5; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--lion-surface2); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- Welcome Screen -->
+<div class="welcome" id="welcome">
+  <div class="welcome-box">
+    <div class="welcome-icon">🦁</div>
+    <div class="welcome-title">Fadhili Insurance</div>
+    <div class="welcome-sub">Your personal AI insurance advisor — get a tailored quote for any of our life insurance products in minutes.</div>
+    <div class="welcome-products">
+      <div class="wp"><span class="wi">🛡️</span>Term Life</div>
+      <div class="wp"><span class="wi">💰</span>Endowment</div>
+      <div class="wp"><span class="wi">🎓</span>Education</div>
+      <div class="wp"><span class="wi">🌿</span>Whole Life</div>
+      <div class="wp"><span class="wi">🏦</span>Pension</div>
+      <div class="wp"><span class="wi">✨</span>& More</div>
+    </div>
+    <button class="start-btn" onclick="startChat()">Start My Free Consultation →</button>
+    <div class="disclaimer">By continuing you agree to Fadhili's Privacy Policy. Your data is protected under Kenya's Data Protection Act 2019.</div>
+  </div>
+</div>
+
+<!-- App -->
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo-mark">🦁</div>
+    <div class="logo-text">
+      <div class="co">Fadhili Insurance</div>
+      <div class="tagline">Insurance · Investments · Life</div>
+    </div>
+    <div class="header-divider"></div>
+    <div class="header-title">
+      <strong>AI Insurance Advisor</strong>
+      Powered by Claude AI · Demo Version
+    </div>
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div> Live Demo</div>
+    </div>
+  </header>
+
+  <!-- Left Panel -->
+  <aside class="left-panel">
+    <!-- Prospect Info -->
+    <div class="prospect-card">
+      <div class="prospect-label">Prospect Profile</div>
+      <div class="pf"><div class="pf-label">Name</div><div class="pf-value" id="pf-name"><span class="pf-empty">Collecting…</span></div></div>
+      <div class="pf"><div class="pf-label">Date of Birth</div><div class="pf-value" id="pf-dob"><span class="pf-empty">—</span></div></div>
+      <div class="pf"><div class="pf-label">Gender</div><div class="pf-value" id="pf-gender"><span class="pf-empty">—</span></div></div>
+      <div class="pf"><div class="pf-label">Smoker</div><div class="pf-value" id="pf-smoker"><span class="pf-empty">—</span></div></div>
+      <div class="pf"><div class="pf-label">Product Interest</div><div class="pf-value gold" id="pf-product"><span class="pf-empty">—</span></div></div>
+      <div class="pf"><div class="pf-label">Sum Assured</div><div class="pf-value gold" id="pf-sum"><span class="pf-empty">—</span></div></div>
+      <div class="pf"><div class="pf-label">Policy Term</div><div class="pf-value" id="pf-term"><span class="pf-empty">—</span></div></div>
+    </div>
+
+    <!-- Stage Tracker -->
+    <div class="stage-section">
+      <div class="stage-title">Sales Stage</div>
+      <div class="stages" id="stages">
+        <div class="stage-row done"><div class="stage-num">✓</div><div class="stage-name-text">Prospecting</div></div>
+        <div class="stage-row active"><div class="stage-num">2</div><div class="stage-name-text">Qualifying</div></div>
+        <div class="stage-row"><div class="stage-num">3</div><div class="stage-name-text">Presentation</div></div>
+        <div class="stage-row"><div class="stage-num">4</div><div class="stage-name-text">Quote</div></div>
+        <div class="stage-row"><div class="stage-num">5</div><div class="stage-name-text">Handling Objections</div></div>
+        <div class="stage-row"><div class="stage-num">6</div><div class="stage-name-text">Close</div></div>
+        <div class="stage-row"><div class="stage-num">7</div><div class="stage-name-text">Agent Handoff</div></div>
+      </div>
+    </div>
+
+    <!-- Products -->
+    <div class="products-section">
+      <div class="products-title">Products</div>
+      <div class="product-pills">
+        <div class="product-pill" id="pill-term"><div class="pill-icon">🛡️</div><div class="pill-info"><div class="pill-name">Term Life Cover</div><div class="pill-age">Entry: 18–60 yrs</div></div></div>
+        <div class="product-pill" id="pill-endow"><div class="pill-icon">💰</div><div class="pill-info"><div class="pill-name">Endowment Plan</div><div class="pill-age">Entry: 18–60 yrs</div></div></div>
+        <div class="product-pill" id="pill-edu"><div class="pill-icon">🎓</div><div class="pill-info"><div class="pill-name">Education Policy</div><div class="pill-age">Entry: 18–55 yrs</div></div></div>
+        <div class="product-pill" id="pill-whole"><div class="pill-icon">🌿</div><div class="pill-info"><div class="pill-name">Whole Life</div><div class="pill-age">Entry: 18–65 yrs</div></div></div>
+        <div class="product-pill" id="pill-pension"><div class="pill-icon">🏦</div><div class="pill-info"><div class="pill-name">Pension / Retirement</div><div class="pill-age">Entry: 18–60 yrs</div></div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Chat -->
+  <main class="chat-main">
+    <div class="chat-top">
+      <div class="bot-avatar">🦁</div>
+      <div class="bot-info">
+        <div class="bot-name">Simba — Fadhili Advisor</div>
+        <div class="bot-desc">AI-powered · Speaks to your needs · Confidential</div>
+      </div>
+      <div class="stage-chip" id="stage-chip">Qualifying</div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <textarea class="chat-textarea" id="chat-input" placeholder="Type your message here…" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMsg()">
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"/></svg>
+        </button>
+      </div>
+      <div class="input-hint">
+        <span class="fadhili-badge">🦁 Fadhili</span>
+        Your information is confidential and secure
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
+
+<script>
+// ── State ──
+let history = [];
+let busy = false;
+let prospect = { name:'', dob:'', gender:'', smoker:'', product:'', sumAssured:'', term:'' };
+let currentStageIdx = 1;
+
+const STAGES = ['Prospecting','Qualifying','Presentation','Quote','Handling Objections','Close','Agent Handoff'];
+
+const SYSTEM = `You are Simba, a warm, knowledgeable AI insurance advisor for Fadhili Insurance — a leading Kenyan insurance company. You guide prospects through their life insurance journey in a natural, friendly conversation.
+
+YOUR PERSONALITY:
+- Warm, professional, and reassuring — never pushy
+- Use simple language; avoid jargon
+- Occasionally use light Kenyan warmth (e.g. "Karibu!", "Asante")
+- Keep responses concise: 2–4 sentences per reply
+
+SALES STAGES (progress through these naturally):
+1. Qualifying: Understand their needs, family situation, financial goals
+2. Presentation: Explain the right product(s) for them
+3. Handling objections: Address concerns honestly
+4. Close: Get agreement to proceed
+
+PRODUCTS (with age limits):
+- Term Life / Pure Risk: Age 18–60, pure death cover, lowest premium, no savings
+- Endowment Plan: Age 18–60, savings + life cover, pays out at maturity or death
+- Education Policy: Age 18–55, savings plan maturing when child reaches 18, ideal for parents
+- Whole Life: Age 18–65, lifetime cover + savings, highest value
+- Pension / Retirement Plan: Age 18–60, builds retirement fund + life cover
+
+QUOTE DATA TO COLLECT (gather naturally through conversation, don't ask all at once):
+- Full name
+- Date of birth (to calculate age and check eligibility)
+- Gender (male/female)  
+- Smoking status (smoker/non-smoker)
+- Product interest (or help them choose)
+- Desired sum assured / coverage amount (in KES)
+- Preferred policy term (years)
+- Monthly or annual premium budget (optional, helpful)
+
+AGE ELIGIBILITY RULES:
+- If prospect's age exceeds the product limit, POLITELY decline for that product and suggest an alternative
+- Always calculate age from DOB before recommending
+
+QUOTE TRIGGER:
+- When you have: name, DOB, gender, smoker status, product, and sum assured → output exactly: [READY_FOR_QUOTE]
+- Before triggering, confirm: "Let me now prepare your personalised quote…"
+
+PROSPECT DATA EXTRACTION:
+- Whenever you learn something new, output a JSON block like: [DATA:{"name":"John","dob":"1985-03-15","gender":"male","smoker":"no","product":"Term Life","sumAssured":"5000000","term":"20"}]
+- Only include fields you've actually confirmed. Update incrementally.
+
+INELIGIBILITY:
+- If age exceeds limit for chosen product, output: [INELIGIBLE:{"product":"Term Life","age":62,"limit":60,"alternative":"Whole Life"}]
+
+AGENT HANDOFF (after close):
+- When prospect agrees to proceed: [AGENT_HANDOFF]
+- Explain that their dedicated Fadhili agent will contact them within 24 hours
+
+Remember: You are representing a trusted, established Kenyan insurance brand. Be professional, caring, and helpful.`;
+
+// ── Start ──
+function startChat() {
+  document.getElementById('welcome').classList.add('hidden');
+  setTimeout(() => {
+    addBotMsg("Karibu! 👋 I'm Simba, your personal Fadhili insurance advisor. I'm here to help you find the right life insurance cover for you and your loved ones.\n\nTo get started, may I know your name and what brings you here today — are you looking to protect your family, save for your child's education, or plan for retirement?");
+  }, 400);
+}
+
+// ── Messaging ──
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+async function sendMsg() {
+  const inp = document.getElementById('chat-input');
+  const txt = inp.value.trim();
+  if (!txt || busy) return;
+  addUserMsg(txt);
+  inp.value = ''; inp.style.height = 'auto';
+  history.push({ role: 'user', content: txt });
+  await getBotReply();
+}
+
+async function getBotReply() {
+  busy = true;
+  document.getElementById('send-btn').disabled = true;
+  showTyping();
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages: history
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.[0]?.text || "Samahani, I couldn't process that. Please try again.";
+    history.push({ role: 'assistant', content: raw });
+    hideTyping();
+    processReply(raw);
+  } catch(e) {
+    hideTyping();
+    addBotMsg("I'm experiencing a brief connection issue. Please try again in a moment.");
+  } finally {
+    busy = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+}
+
+function processReply(raw) {
+  // Extract DATA block
+  const dataMatch = raw.match(/\[DATA:(\{[^}]+\})\]/);
+  if (dataMatch) {
+    try {
+      const d = JSON.parse(dataMatch[1]);
+      Object.assign(prospect, d);
+      updateProspectPanel();
+    } catch(e) {}
+  }
+
+  // Check for special signals
+  if (raw.includes('[READY_FOR_QUOTE]')) {
+    const clean = raw.replace(/\[DATA:[^\]]+\]/g,'').replace('[READY_FOR_QUOTE]','').trim();
+    if (clean) addBotMsg(clean);
+    setStage(3);
+    setTimeout(() => showQuote(), 900);
+    return;
+  }
+  if (raw.includes('[INELIGIBLE:')) {
+    const match = raw.match(/\[INELIGIBLE:(\{[^}]+\})\]/);
+    let info = {};
+    try { info = JSON.parse(match[1]); } catch(e) {}
+    const clean = raw.replace(/\[DATA:[^\]]+\]/g,'').replace(/\[INELIGIBLE:[^\]]+\]/g,'').trim();
+    if (clean) addBotMsg(clean);
+    showIneligible(info);
+    return;
+  }
+  if (raw.includes('[AGENT_HANDOFF]')) {
+    const clean = raw.replace(/\[DATA:[^\]]+\]/g,'').replace('[AGENT_HANDOFF]','').trim();
+    if (clean) addBotMsg(clean);
+    setStage(6);
+    setTimeout(() => showHandoff(), 800);
+    return;
+  }
+
+  const clean = raw.replace(/\[DATA:[^\]]+\]/g,'').trim();
+  addBotMsg(clean);
+
+  // Auto-advance stage based on content
+  if (currentStageIdx === 1 && (raw.toLowerCase().includes('let me tell you') || raw.toLowerCase().includes('sounds like') || raw.toLowerCase().includes('perfect product'))) setStage(2);
+  if (currentStageIdx === 2 && (raw.toLowerCase().includes('concern') || raw.toLowerCase().includes('understand') || raw.toLowerCase().includes('worry'))) setStage(4);
+}
+
+// ── Quote ──
+function showQuote() {
+  const age = prospect.dob ? calcAge(prospect.dob) : '?';
+  const sum = prospect.sumAssured ? parseInt(prospect.sumAssured) : 5000000;
+  const term = prospect.term || 20;
+  const product = prospect.product || 'Term Life Cover';
+  const gender = prospect.gender || 'male';
+  const smoker = prospect.smoker === 'yes' || prospect.smoker === 'smoker';
+
+  // Simple illustrative premium calculation
+  let basePremium = 0;
+  const sumM = sum / 1000000;
+  if (product.toLowerCase().includes('term')) {
+    basePremium = sumM * (gender === 'female' ? 1800 : 2200) * (parseInt(term)/20);
+  } else if (product.toLowerCase().includes('endow')) {
+    basePremium = sumM * 8500 + (sum * 0.025);
+  } else if (product.toLowerCase().includes('edu')) {
+    basePremium = sum * 0.035;
+  } else if (product.toLowerCase().includes('whole')) {
+    basePremium = sumM * 12000;
+  } else if (product.toLowerCase().includes('pension') || product.toLowerCase().includes('retire')) {
+    basePremium = sum * 0.04;
+  } else {
+    basePremium = sum * 0.025;
+  }
+  if (smoker) basePremium *= 1.25;
+  basePremium = Math.round(basePremium / 100) * 100;
+  const annualPrem = basePremium * 12;
+
+  const msgs = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg system-msg';
+  wrap.innerHTML = `
+    <div class="card quote-card">
+      <div class="card-eyebrow">📋 Your Personalised Quote</div>
+      <div class="card-headline">${product}</div>
+      <div class="card-sub">Prepared for ${prospect.name || 'Valued Client'} · ${new Date().toLocaleDateString('en-KE',{day:'numeric',month:'long',year:'numeric'})}</div>
+      <div class="quote-table">
+        <div class="quote-row"><span class="ql">Sum Assured</span><span class="qr">KES ${parseInt(sum).toLocaleString()}</span></div>
+        <div class="quote-row"><span class="ql">Policy Term</span><span class="qr">${term} Years</span></div>
+        <div class="quote-row"><span class="ql">Entry Age</span><span class="qr">${age} Years</span></div>
+        <div class="quote-row"><span class="ql">Gender / Smoker</span><span class="qr">${gender.charAt(0).toUpperCase()+gender.slice(1)} / ${smoker?'Smoker':'Non-Smoker'}</span></div>
+        <div class="quote-row"><span class="ql">Monthly Premium</span><span class="qr">KES ${basePremium.toLocaleString()}</span></div>
+        <div class="quote-row total"><span class="ql">Annual Premium</span><span class="qr">KES ${annualPrem.toLocaleString()}</span></div>
+      </div>
+      <div class="card-note">⚠️ This is an indicative quote for illustration purposes. Final premiums are subject to Fadhili's underwriting assessment and official rate tables.</div>
+      <div class="card-actions">
+        <button class="btn btn-gold" onclick="acceptQuote()">I'm Interested — Proceed</button>
+        <button class="btn btn-outline" onclick="askQuestion()">I Have a Question</button>
+        <button class="btn btn-outline" onclick="adjustQuote()">Adjust My Cover</button>
+      </div>
+    </div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  setStage(3);
+  highlightProduct(prospect.product);
+  showToast('Quote generated successfully');
+}
+
+function acceptQuote() {
+  addUserMsg("This looks great! I'm interested in proceeding.");
+  history.push({ role: 'user', content: "I'm happy with the quote and would like to proceed." });
+  setStage(5);
+  getBotReply();
+}
+
+function askQuestion() {
+  addUserMsg("I have a few questions about this quote.");
+  history.push({ role: 'user', content: "I have some questions before I decide." });
+  setStage(4);
+  getBotReply();
+}
+
+function adjustQuote() {
+  addUserMsg("Can we adjust the coverage amount or term?");
+  history.push({ role: 'user', content: "I'd like to explore different coverage amounts or policy terms." });
+  getBotReply();
+}
+
+// ── Ineligible ──
+function showIneligible(info) {
+  const msgs = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg system-msg';
+  wrap.innerHTML = `
+    <div class="ineligible-card">
+      <div style="font-size:13px; font-weight:600; color:var(--danger); margin-bottom:8px;">Age Eligibility Notice</div>
+      <div style="font-size:14px; color:var(--text); margin-bottom:10px;">At age <strong>${info.age}</strong>, the maximum entry age for <strong>${info.product}</strong> is <strong>${info.limit} years</strong>.</div>
+      ${info.alternative ? `<div style="font-size:13px; color:var(--text2);">✅ Good news — you may still qualify for <strong style="color:var(--lion-gold-light)">${info.alternative}</strong>, which has a higher entry age. Would you like me to explore this option?</div>
+      <div class="card-actions" style="margin-top:12px">
+        <button class="btn btn-gold" onclick="exploreAlternative('${info.alternative}')">Yes, tell me more</button>
+      </div>` : ''}
+    </div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function exploreAlternative(product) {
+  addUserMsg(`Yes, please tell me about the ${product} option.`);
+  history.push({ role: 'user', content: `Please tell me more about ${product} as an alternative.` });
+  getBotReply();
+}
+
+// ── Handoff ──
+function showHandoff() {
+  const msgs = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg system-msg';
+  wrap.innerHTML = `
+    <div class="card success-card">
+      <div class="card-eyebrow">🎉 Application Initiated</div>
+      <div class="card-headline">Welcome to Fadhili!</div>
+      <div class="card-sub">Your consultation is complete. Here's what happens next:</div>
+      <div class="quote-table">
+        <div class="quote-row"><span class="ql">📞 Agent Contact</span><span class="qr" style="color:var(--success)">Within 24 hours</span></div>
+        <div class="quote-row"><span class="ql">📄 Proposal Form</span><span class="qr">Sent to your email</span></div>
+        <div class="quote-row"><span class="ql">🏥 Medical Check</span><span class="qr">If required by Fadhili</span></div>
+        <div class="quote-row"><span class="ql">✅ Policy Issuance</span><span class="qr">After underwriting</span></div>
+      </div>
+      <div class="card-note">Your dedicated Fadhili agent will review your application and guide you through the remaining steps. Asante sana for choosing Fadhili! 🦁</div>
+      <div class="card-actions">
+        <button class="btn btn-green" onclick="showToast('Agent notified! You will be contacted soon.')">✓ Confirmed</button>
+      </div>
+    </div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+  document.getElementById('stage-chip').textContent = 'Closed';
+  document.getElementById('stage-chip').classList.add('closed');
+  showToast('Lead closed · Agent notified · 🦁');
+}
+
+// ── UI Helpers ──
+function addBotMsg(text) {
+  const msgs = document.getElementById('messages');
+  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const wrap = document.createElement('div');
+  wrap.className = 'msg bot';
+  wrap.innerHTML = `
+    <div class="msg-av bot-av">🦁</div>
+    <div>
+      <div class="bubble">${esc(text)}</div>
+      <div class="msg-time">Simba · ${t}</div>
+    </div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMsg(text) {
+  const msgs = document.getElementById('messages');
+  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const wrap = document.createElement('div');
+  wrap.className = 'msg user';
+  wrap.innerHTML = `
+    <div class="msg-av user-av">YOU</div>
+    <div>
+      <div class="bubble">${esc(text)}</div>
+      <div class="msg-time">${t}</div>
+    </div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'typing-wrap'; wrap.id = 'typing';
+  wrap.innerHTML = `<div class="msg-av bot-av">🦁</div><div class="typing-bubble"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function hideTyping() { document.getElementById('typing')?.remove(); }
+
+function esc(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function setStage(idx) {
+  currentStageIdx = idx;
+  const rows = document.querySelectorAll('.stage-row');
+  rows.forEach((r, i) => {
+    r.classList.remove('done','active');
+    if (i < idx) r.classList.add('done');
+    else if (i === idx) r.classList.add('active');
+  });
+  document.getElementById('stage-chip').textContent = STAGES[idx] || 'In Progress';
+}
+
+function updateProspectPanel() {
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (val) { el.innerHTML = val; }
+  };
+  if (prospect.name) set('pf-name', prospect.name);
+  if (prospect.dob) set('pf-dob', prospect.dob + ' (Age ' + calcAge(prospect.dob) + ')');
+  if (prospect.gender) set('pf-gender', prospect.gender.charAt(0).toUpperCase()+prospect.gender.slice(1));
+  if (prospect.smoker) set('pf-smoker', prospect.smoker === 'yes' || prospect.smoker === 'smoker' ? '🚬 Smoker' : '✅ Non-Smoker');
+  if (prospect.product) set('pf-product', prospect.product);
+  if (prospect.sumAssured) set('pf-sum', 'KES ' + parseInt(prospect.sumAssured).toLocaleString());
+  if (prospect.term) set('pf-term', prospect.term + ' Years');
+}
+
+function highlightProduct(product) {
+  if (!product) return;
+  const map = { 'term': 'pill-term', 'endow': 'pill-endow', 'edu': 'pill-edu', 'whole': 'pill-whole', 'pension': 'pill-pension', 'retire': 'pill-pension' };
+  for (const [k, id] of Object.entries(map)) {
+    if (product.toLowerCase().includes(k)) {
+      document.querySelectorAll('.product-pill').forEach(p => p.classList.remove('selected'));
+      document.getElementById(id)?.classList.add('selected');
+      break;
+    }
+  }
+}
+
+function calcAge(dob) {
+  const b = new Date(dob); const now = new Date();
+  let age = now.getFullYear() - b.getFullYear();
+  const m = now.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+  return age;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
