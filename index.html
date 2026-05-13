@@ -642,18 +642,25 @@ async function getBotReply() {
   document.getElementById('send-btn').disabled = true;
   showTyping();
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: SYSTEM,
-        messages: history
-      })
-    });
-    const data = await res.json();
-    const raw = data.content?.[0]?.text || "Samahani, I couldn't process that. Please try again.";
+    const res = await fetch('/api/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    history,
+    system: SYSTEM
+  })
+});
+
+const data = await res.json();
+
+if (!data.success) {
+  throw new Error(data.error || 'Request failed');
+}
+
+const raw = data.text || "Samahani, I couldn't process that. Please try again.";
+
     history.push({ role: 'assistant', content: raw });
     hideTyping();
     processReply(raw);
