@@ -642,6 +642,9 @@ async function getBotReply() {
   document.getElementById('send-btn').disabled = true;
   showTyping();
   try {
+    console.log('HISTORY------------------',history);
+    console.log('SYSTEM------------------',SYSTEM);
+    console.log('PROSPECT------------------',prospect);
     const res = await fetch('/api/chat', {
   method: 'POST',
   headers: {
@@ -649,7 +652,7 @@ async function getBotReply() {
   },
   body: JSON.stringify({
     history,
-    system: SYSTEM
+    system: SYSTEM,
   })
 });
 
