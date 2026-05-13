@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 
 dotenv.config();
@@ -11,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 
-// Serve your HTML app
+// Serve static frontend
 app.use(express.static("."));
 
 const openai = new OpenAI({
@@ -23,23 +22,23 @@ app.post("/api/chat", async (req, res) => {
     const { history, system } = req.body;
 
     const response = await openai.chat.completions.create({
-        model: "gpt-4.1-mini",
-        messages: [
-            {
-            role: "system",
-            content: system
-            },
-            ...history
-        ]
+      model: "gpt-4.1-mini",
+      messages: [
+        {
+          role: "system",
+          content: system,
+        },
+        ...history,
+      ],
     });
 
     res.json({
       success: true,
-      text: response.content[0].text,
+      text: response.choices[0].message.content,
     });
 
   } catch (error) {
-    console.error("Anthropic Error:", error);
+    console.error("OpenAI Error:", error);
 
     res.status(500).json({
       success: false,
