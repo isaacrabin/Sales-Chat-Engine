@@ -666,6 +666,7 @@ const raw = data.text || "Samahani, I couldn't process that. Please try again.";
     processReply(raw);
   } catch(e) {
     hideTyping();
+    console.error('ERROR------------------',e);
     addBotMsg("I'm experiencing a brief connection issue. Please try again in a moment.");
   } finally {
     busy = false;
