@@ -644,7 +644,6 @@ async function getBotReply() {
   try {
     console.log('HISTORY------------------',history);
     console.log('SYSTEM------------------',SYSTEM);
-    console.log('PROSPECT------------------',prospect);
     const res = await fetch('/api/chat', {
   method: 'POST',
   headers: {
