@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
 <title>Fadhili — AI Insurance Advisor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -59,6 +59,7 @@ body::before {
   grid-template-columns: 300px 1fr;
   grid-template-rows: 70px 1fr;
   height: 100vh;
+  transition: all 0.2s ease;
 }
 
 /* ── Header ── */
@@ -67,7 +68,7 @@ body::before {
   background: rgba(13,31,23,0.95);
   border-bottom: 1px solid var(--lion-border);
   backdrop-filter: blur(12px);
-  display: flex; align-items: center; gap: 16px; padding: 0 28px;
+  display: flex; align-items: center; gap: 12px; padding: 0 20px;
   position: relative;
 }
 .header::after {
@@ -76,364 +77,209 @@ body::before {
   background: linear-gradient(90deg, transparent, var(--lion-gold), transparent);
 }
 .logo-mark {
-  width: 40px; height: 40px; border-radius: 10px;
+  width: 36px; height: 36px; border-radius: 10px;
   background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
   display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
+  font-size: 18px; flex-shrink: 0;
   box-shadow: 0 2px 12px rgba(200,150,46,0.3);
 }
-.logo-text { font-family: var(--font-display); }
-.logo-text .co { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
-.logo-text .tagline { font-size: 11px; color: var(--text3); letter-spacing: 0.5px; margin-top: -2px; }
-.header-divider { width: 1px; height: 30px; background: var(--lion-border); }
-.header-title { font-size: 13px; color: var(--text2); }
-.header-title strong { color: var(--lion-gold-light); display: block; font-size: 14px; }
-.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.live-badge {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11px; color: var(--success); background: rgba(76,175,130,0.1);
-  border: 1px solid rgba(76,175,130,0.25); border-radius: 100px; padding: 4px 12px;
-}
-.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(76,175,130,0.4); } 50% { box-shadow: 0 0 0 4px transparent; } }
+.logo-text .co { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
+.logo-text .tagline { font-size: 8px; color: var(--text3); letter-spacing: 0.5px; margin-top: -2px; display: none; }
+.header-divider { width: 1px; height: 24px; background: var(--lion-border); }
+.header-title { font-size: 11px; color: var(--text2); }
+.header-title strong { color: var(--lion-gold-light); display: block; font-size: 12px; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.live-badge { font-size: 10px; padding: 4px 10px; }
 
-/* ── Left Panel ── */
+/* ── Left Panel (Mobile: transforms to slide-out) ── */
 .left-panel {
-  background: rgba(26,51,40,0.6);
+  background: rgba(26,51,40,0.92);
   border-right: 1px solid var(--lion-border);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
   display: flex; flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  transition: transform 0.25s ease-in-out;
+  z-index: 20;
 }
 
-.prospect-card {
-  padding: 20px;
-  border-bottom: 1px solid var(--lion-border);
-}
-.prospect-label {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
-  color: var(--lion-gold); font-weight: 600; margin-bottom: 12px;
-  display: flex; align-items: center; gap: 6px;
-}
-.prospect-label::after { content: ''; flex: 1; height: 1px; background: var(--lion-border); }
-.pf { margin-bottom: 8px; }
-.pf-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
-.pf-value { font-size: 13px; color: var(--text); }
-.pf-value.gold { color: var(--lion-gold-light); font-weight: 500; }
-.pf-empty { color: var(--text3); font-style: italic; font-size: 12px; }
+/* Prospect card + stages compact */
+.prospect-card { padding: 16px; }
+.pf-label { font-size: 9px; }
+.pf-value { font-size: 12px; }
+.stage-section { padding: 12px 16px; }
+.products-section { padding: 12px 16px; }
 
-/* Stage tracker */
-.stage-section { padding: 16px 20px; border-bottom: 1px solid var(--lion-border); }
-.stage-title {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
-  color: var(--lion-gold); font-weight: 600; margin-bottom: 12px;
-  display: flex; align-items: center; gap: 6px;
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px 1fr;
+  }
+  .header {
+    padding: 0 14px;
+    gap: 8px;
+  }
+  .logo-mark { width: 32px; height: 32px; font-size: 16px; }
+  .logo-text .co { font-size: 14px; }
+  .header-title { display: none; }
+  .header-divider { display: none; }
+  .header-right { margin-left: auto; }
+  .live-badge { font-size: 9px; padding: 3px 8px; }
+  
+  /* Left panel becomes overlay panel (off-canvas) */
+  .left-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 85%;
+    max-width: 300px;
+    height: 100vh;
+    transform: translateX(-100%);
+    z-index: 1000;
+    box-shadow: 4px 0 32px rgba(0,0,0,0.5);
+    border-right: 1px solid var(--lion-border2);
+    background: rgba(13,31,23,0.96);
+    backdrop-filter: blur(20px);
+  }
+  .left-panel.open {
+    transform: translateX(0);
+  }
+  /* menu toggle button */
+  .menu-toggle {
+    display: flex;
+    background: rgba(200,150,46,0.12);
+    border: 1px solid var(--lion-border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    gap: 6px;
+    align-items: center;
+    margin-left: 0;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--lion-gold-light);
+  }
+  .menu-toggle span { font-size: 18px; line-height: 1; }
+  .overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(3px);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s;
+  }
+  .overlay-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .chat-main {
+    width: 100%;
+  }
+  .messages {
+    padding: 16px;
+  }
+  .msg.user, .msg.bot {
+    max-width: 85% !important;
+  }
+  .msg.user { max-width: 85% !important; align-self: flex-end; }
+  .msg.bot { max-width: 85% !important; align-self: flex-start; }
+  .bubble {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  .card {
+    padding: 16px;
+    max-width: 95%;
+  }
+  .card-headline { font-size: 18px; }
+  .quote-row.total .qr { font-size: 18px; }
+  .product-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .input-area {
+    padding: 10px 14px;
+  }
+  .input-row {
+    padding: 8px 10px;
+  }
+  .chat-textarea {
+    font-size: 14px;
+  }
+  .stage-chip {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+  .chat-top {
+    padding: 10px 14px;
+  }
+  .bot-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+  .bot-info .bot-name { font-size: 13px; }
+  .bot-info .bot-desc { font-size: 9px; }
+  .toast {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: calc(100% - 32px);
+    font-size: 12px;
+  }
+  .welcome-box {
+    width: 90%;
+    padding: 20px;
+  }
+  .welcome-products {
+    grid-template-columns: 1fr 1fr;
+  }
+  .welcome-title {
+    font-size: 26px;
+  }
 }
-.stage-title::after { content: ''; flex: 1; height: 1px; background: var(--lion-border); }
-.stages { display: flex; flex-direction: column; gap: 4px; }
-.stage-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 5px 8px; border-radius: 6px; transition: all 0.3s;
-}
-.stage-row.done { background: rgba(200,150,46,0.06); }
-.stage-row.active { background: rgba(200,150,46,0.12); }
-.stage-num {
-  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700;
-  border: 1.5px solid rgba(255,255,255,0.1); color: var(--text3);
-  transition: all 0.3s;
-}
-.stage-row.done .stage-num { background: rgba(200,150,46,0.2); border-color: var(--lion-gold); color: var(--lion-gold); }
-.stage-row.active .stage-num { background: var(--lion-gold); border-color: var(--lion-gold); color: #0D1F17; }
-.stage-name-text { font-size: 12px; color: var(--text3); transition: color 0.3s; }
-.stage-row.done .stage-name-text { color: var(--text2); }
-.stage-row.active .stage-name-text { color: var(--lion-gold-light); font-weight: 600; }
 
-/* Product pills */
-.products-section { padding: 16px 20px; flex: 1; }
-.products-title {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
-  color: var(--lion-gold); font-weight: 600; margin-bottom: 10px;
-  display: flex; align-items: center; gap: 6px;
-}
-.products-title::after { content: ''; flex: 1; height: 1px; background: var(--lion-border); }
-.product-pills { display: flex; flex-direction: column; gap: 6px; }
-.product-pill {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; border-radius: 8px; cursor: pointer;
-  border: 1px solid transparent; transition: all 0.2s;
-  background: rgba(255,255,255,0.02);
-}
-.product-pill:hover { background: rgba(200,150,46,0.08); border-color: var(--lion-border); }
-.product-pill.selected { background: rgba(200,150,46,0.12); border-color: var(--lion-border2); }
-.pill-icon { font-size: 16px; width: 28px; text-align: center; }
-.pill-info { flex: 1; }
-.pill-name { font-size: 12px; font-weight: 500; color: var(--text); }
-.pill-age { font-size: 10px; color: var(--text3); }
+/* Desktop: menu toggle hidden */
+.menu-toggle { display: none; }
+.overlay-backdrop { display: none; }
 
-/* ── Main Chat ── */
+@media (max-width: 768px) {
+  .menu-toggle { display: flex; }
+}
+
+/* Additional flex & scroll styles */
 .chat-main {
   display: flex; flex-direction: column;
   background: transparent; overflow: hidden;
 }
 
-.chat-top {
-  padding: 14px 24px; border-bottom: 1px solid var(--lion-border);
-  display: flex; align-items: center; gap: 12px;
-  background: rgba(13,31,23,0.4); backdrop-filter: blur(6px);
-}
-.bot-avatar {
-  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--lion-green) 0%, var(--lion-gold) 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  box-shadow: 0 0 0 3px rgba(200,150,46,0.2);
-}
-.bot-info .bot-name { font-size: 15px; font-weight: 600; font-family: var(--font-display); }
-.bot-info .bot-desc { font-size: 11px; color: var(--text3); margin-top: 1px; }
-.stage-chip {
-  margin-left: auto; font-size: 11px; font-weight: 600;
-  padding: 4px 12px; border-radius: 100px;
-  background: rgba(200,150,46,0.12); color: var(--lion-gold-light);
-  border: 1px solid rgba(200,150,46,0.25);
-  transition: all 0.4s;
-}
-.stage-chip.closed { background: rgba(76,175,130,0.12); color: var(--success); border-color: rgba(76,175,130,0.25); }
-
 .messages {
-  flex: 1; overflow-y: auto; padding: 24px;
-  display: flex; flex-direction: column; gap: 14px;
+  flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
   scroll-behavior: smooth;
 }
-.messages::-webkit-scrollbar { width: 4px; }
-.messages::-webkit-scrollbar-thumb { background: var(--lion-surface2); border-radius: 4px; }
 
-.msg { display: flex; gap: 10px; animation: msgIn 0.3s ease; }
-@keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.msg.user { flex-direction: row-reverse; align-self: flex-end; max-width: 72%; }
-.msg.bot { align-self: flex-start; max-width: 76%; }
-.msg.system-msg { align-self: center; max-width: 100%; width: 100%; justify-content: center; }
+.product-pill { cursor: pointer; }
+.btn { cursor: pointer; }
+.send-btn { cursor: pointer; }
 
-.msg-av {
-  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 13px;
-  margin-top: 2px;
-}
-.msg-av.bot-av {
-  background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
-  box-shadow: 0 0 0 2px rgba(200,150,46,0.2);
-}
-.msg-av.user-av { background: var(--lion-surface2); color: var(--text2); font-weight: 600; font-size: 11px; }
-
-.bubble {
-  padding: 12px 16px; border-radius: 16px; font-size: 14px; line-height: 1.6;
-}
-.bot .bubble {
-  background: var(--lion-surface);
-  border: 1px solid var(--lion-border);
-  border-radius: 4px 16px 16px 16px;
-  color: var(--text);
-}
-.user .bubble {
-  background: linear-gradient(135deg, rgba(0,91,65,0.6), rgba(200,150,46,0.2));
-  border: 1px solid rgba(200,150,46,0.2);
-  border-radius: 16px 4px 16px 16px;
-  color: var(--text);
-}
-.msg-time { font-size: 10px; color: var(--text3); margin-top: 4px; }
-.user .msg-time { text-align: right; }
-
-/* Typing */
-.typing-wrap { display: flex; gap: 10px; align-self: flex-start; animation: msgIn 0.2s ease; }
-.typing-bubble {
-  padding: 14px 18px; background: var(--lion-surface); border: 1px solid var(--lion-border);
-  border-radius: 4px 16px 16px 16px;
-  display: flex; gap: 5px; align-items: center;
-}
-.typing-bubble span {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--lion-gold);
-  opacity: 0.4; animation: typingDot 1.4s infinite;
-}
-.typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
-.typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes typingDot { 0%,60%,100% { opacity: 0.3; transform: scale(1); } 30% { opacity: 1; transform: scale(1.3); } }
-
-/* ── Cards ── */
-.card {
-  background: var(--lion-surface);
-  border: 1px solid var(--lion-border);
-  border-radius: var(--radius); padding: 22px;
-  width: 100%; max-width: 520px;
-  margin: 0 auto;
-  animation: msgIn 0.35s ease;
-  position: relative; overflow: hidden;
-}
-.card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--lion-green), var(--lion-gold));
-}
-.card.quote-card { border-color: rgba(200,150,46,0.3); }
-.card.success-card { border-color: rgba(76,175,130,0.3); }
-.card.success-card::before { background: linear-gradient(90deg, var(--lion-green), var(--success)); }
-
-.card-eyebrow {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
-  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
-}
-.card.quote-card .card-eyebrow { color: var(--lion-gold); }
-.card.success-card .card-eyebrow { color: var(--success); }
-.card-headline { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.card-sub { font-size: 13px; color: var(--text2); margin-bottom: 18px; }
-
-.quote-table { border-top: 1px solid var(--lion-border); padding-top: 14px; }
-.quote-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; }
-.quote-row .ql { color: var(--text2); }
-.quote-row .qr { color: var(--text); font-weight: 500; }
-.quote-row.total {
-  border-top: 1px solid var(--lion-border);
-  margin-top: 6px; padding-top: 12px;
-  font-size: 15px; font-weight: 600;
-}
-.quote-row.total .ql { color: var(--text); }
-.quote-row.total .qr { color: var(--lion-gold-light); font-size: 20px; font-family: var(--font-display); }
-
-.card-note {
-  margin-top: 14px; padding: 10px 12px;
-  background: rgba(200,150,46,0.06); border-radius: 8px;
-  border-left: 2px solid var(--lion-gold);
-  font-size: 12px; color: var(--text2); line-height: 1.5;
-}
-
-.card-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-.btn {
-  font-family: var(--font-body); font-size: 13px; font-weight: 500;
-  padding: 10px 20px; border-radius: 10px; cursor: pointer;
-  border: 1px solid transparent; transition: all 0.2s; line-height: 1;
-}
-.btn-gold { background: var(--lion-gold); color: #0D1F17; border-color: var(--lion-gold); font-weight: 600; }
-.btn-gold:hover { background: var(--lion-gold-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200,150,46,0.3); }
-.btn-outline { background: transparent; color: var(--text2); border-color: var(--lion-border2); }
-.btn-outline:hover { color: var(--text); border-color: rgba(200,150,46,0.4); background: rgba(200,150,46,0.05); }
-.btn-green { background: rgba(76,175,130,0.15); color: var(--success); border-color: rgba(76,175,130,0.3); }
-.btn-green:hover { background: rgba(76,175,130,0.25); }
-
-/* Product selector cards */
-.product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
-.prod-card {
-  padding: 12px; border-radius: 10px; cursor: pointer;
-  background: rgba(255,255,255,0.03); border: 1px solid var(--lion-border);
-  transition: all 0.2s; text-align: center;
-}
-.prod-card:hover { background: rgba(200,150,46,0.08); border-color: var(--lion-border2); transform: translateY(-1px); }
-.prod-card-icon { font-size: 22px; margin-bottom: 4px; }
-.prod-card-name { font-size: 12px; font-weight: 500; color: var(--text); line-height: 1.3; }
-
-/* Input */
-.input-area {
-  padding: 16px 24px;
-  border-top: 1px solid var(--lion-border);
-  background: rgba(13,31,23,0.5); backdrop-filter: blur(6px);
-}
-.input-row {
-  display: flex; align-items: flex-end; gap: 10px;
-  background: var(--lion-surface); border: 1px solid var(--lion-border);
-  border-radius: var(--radius-sm); padding: 10px 14px;
-  transition: border-color 0.2s;
-}
-.input-row:focus-within { border-color: rgba(200,150,46,0.4); }
-.chat-textarea {
-  flex: 1; background: none; border: none; outline: none;
-  font-family: var(--font-body); font-size: 14px; color: var(--text);
-  resize: none; min-height: 22px; max-height: 120px; line-height: 1.5;
-}
-.chat-textarea::placeholder { color: var(--text3); }
-.send-btn {
-  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
-  border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s; box-shadow: 0 2px 8px rgba(200,150,46,0.2);
-}
-.send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 14px rgba(200,150,46,0.35); }
-.send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-.send-btn svg { width: 16px; height: 16px; fill: white; }
-.input-hint {
-  font-size: 11px; color: var(--text3); text-align: center;
-  margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;
-}
-.fadhili-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: rgba(200,150,46,0.08); border: 1px solid var(--lion-border);
-  border-radius: 4px; padding: 1px 6px; font-size: 10px; color: var(--lion-gold);
-}
-
-/* Ineligible banner */
+/* ineligible card responsiveness */
 .ineligible-card {
-  background: rgba(224,82,82,0.08); border: 1px solid rgba(224,82,82,0.2);
-  border-radius: var(--radius); padding: 18px 22px; max-width: 520px; margin: 0 auto;
-  animation: msgIn 0.3s ease;
+  max-width: 100%;
+  margin: 0 8px;
 }
-.ineligible-card::before {
-  content: ''; display: block; width: 100%; height: 2px;
-  background: linear-gradient(90deg, var(--danger), transparent);
-  margin-bottom: 14px; border-radius: 2px;
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-
-/* Toast */
-.toast {
-  position: fixed; bottom: 24px; right: 24px; z-index: 999;
-  background: var(--lion-surface); border: 1px solid var(--lion-border2);
-  border-radius: 10px; padding: 12px 18px; font-size: 13px;
-  display: flex; align-items: center; gap: 10px;
-  transform: translateY(80px); opacity: 0; transition: all 0.3s;
-  box-shadow: var(--shadow); max-width: 300px;
+.btn {
+  text-align: center;
+  white-space: nowrap;
 }
-.toast.show { transform: translateY(0); opacity: 1; }
-
-/* Welcome overlay */
-.welcome {
-  position: fixed; inset: 0; z-index: 100;
-  background: rgba(13,31,23,0.92); backdrop-filter: blur(16px);
-  display: flex; align-items: center; justify-content: center;
-  transition: opacity 0.5s;
+@media (max-width: 480px) {
+  .btn { white-space: normal; font-size: 12px; padding: 8px 12px; }
+  .card-actions { flex-direction: column; }
+  .card-actions .btn { width: 100%; }
+  .product-pills .product-pill { padding: 6px 8px; }
 }
-.welcome.hidden { opacity: 0; pointer-events: none; }
-.welcome-box {
-  text-align: center; max-width: 480px; padding: 24px;
-  animation: welcomeIn 0.6s cubic-bezier(.16,1,.3,1);
-}
-@keyframes welcomeIn { from { opacity: 0; transform: translateY(30px) scale(0.97); } to { opacity: 1; transform: none; } }
-.welcome-icon {
-  width: 80px; height: 80px; border-radius: 24px; margin: 0 auto 20px;
-  background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 38px;
-  box-shadow: 0 0 0 12px rgba(200,150,46,0.08), 0 0 0 24px rgba(200,150,46,0.04);
-}
-.welcome-title { font-family: var(--font-display); font-size: 30px; font-weight: 700; margin-bottom: 8px; }
-.welcome-sub { font-size: 15px; color: var(--text2); margin-bottom: 28px; line-height: 1.6; }
-.welcome-products {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 28px;
-}
-.wp { background: rgba(255,255,255,0.04); border: 1px solid var(--lion-border); border-radius: 10px; padding: 10px 8px; font-size: 12px; color: var(--text2); }
-.wp .wi { font-size: 20px; display: block; margin-bottom: 4px; }
-.start-btn {
-  font-family: var(--font-body); font-size: 15px; font-weight: 600;
-  padding: 14px 40px; border-radius: var(--radius-sm); cursor: pointer;
-  background: linear-gradient(135deg, var(--lion-green), var(--lion-gold));
-  color: white; border: none;
-  box-shadow: 0 4px 20px rgba(200,150,46,0.3);
-  transition: all 0.2s;
-}
-.start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,150,46,0.4); }
-.disclaimer { font-size: 11px; color: var(--text3); margin-top: 16px; line-height: 1.5; }
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--lion-surface2); border-radius: 4px; }
 </style>
 </head>
 <body>
@@ -460,7 +306,7 @@ body::before {
 <!-- App -->
 <div class="app">
 
-  <!-- Header -->
+  <!-- Header with mobile menu toggle -->
   <header class="header">
     <div class="logo-mark">🦁</div>
     <div class="logo-text">
@@ -473,13 +319,15 @@ body::before {
       Powered by AI · Demo Version
     </div>
     <div class="header-right">
+      <div class="menu-toggle" id="menuToggle">
+        <span>☰</span> <span style="font-size:10px">Info</span>
+      </div>
       <div class="live-badge"><div class="live-dot"></div> Live Demo</div>
     </div>
   </header>
 
-  <!-- Left Panel -->
-  <aside class="left-panel">
-    <!-- Prospect Info -->
+  <!-- Left Panel (Mobile drawer) -->
+  <aside class="left-panel" id="leftPanel">
     <div class="prospect-card">
       <div class="prospect-label">Prospect Profile</div>
       <div class="pf"><div class="pf-label">Name</div><div class="pf-value" id="pf-name"><span class="pf-empty">Collecting…</span></div></div>
@@ -491,7 +339,6 @@ body::before {
       <div class="pf"><div class="pf-label">Policy Term</div><div class="pf-value" id="pf-term"><span class="pf-empty">—</span></div></div>
     </div>
 
-    <!-- Stage Tracker -->
     <div class="stage-section">
       <div class="stage-title">Sales Stage</div>
       <div class="stages" id="stages">
@@ -505,7 +352,6 @@ body::before {
       </div>
     </div>
 
-    <!-- Products -->
     <div class="products-section">
       <div class="products-title">Products</div>
       <div class="product-pills">
@@ -517,8 +363,9 @@ body::before {
       </div>
     </div>
   </aside>
+  <div class="overlay-backdrop" id="backdrop"></div>
 
-  <!-- Chat -->
+  <!-- Chat Main -->
   <main class="chat-main">
     <div class="chat-top">
       <div class="bot-avatar">🦁</div>
@@ -535,7 +382,7 @@ body::before {
       <div class="input-row">
         <textarea class="chat-textarea" id="chat-input" placeholder="Type your message here…" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
         <button class="send-btn" id="send-btn" onclick="sendMsg()">
-          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"/></svg>
+          <svg viewBox="0 0 24 24" width="16" height="16"><path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" fill="white" stroke="none"/></svg>
         </button>
       </div>
       <div class="input-hint">
@@ -544,20 +391,18 @@ body::before {
       </div>
     </div>
   </main>
-
 </div>
 
 <div class="toast" id="toast"><span id="toast-msg"></span></div>
 
 <script>
-// ── State ──
+// ── STATE ──
 let history = [];
 let busy = false;
 let prospect = { name:'', dob:'', gender:'', smoker:'', product:'', sumAssured:'', term:'' };
 let currentStageIdx = 1;
 
 const STAGES = ['Prospecting','Qualifying','Presentation','Quote','Handling Objections','Close','Agent Handoff'];
-
 const SYSTEM = `You are Simba, a warm, knowledgeable AI insurance advisor for Fadhili Insurance — a leading Kenyan insurance company. You guide prospects through their life insurance journey in a natural, friendly conversation.
 
 YOUR PERSONALITY:
@@ -587,30 +432,50 @@ QUOTE DATA TO COLLECT (gather naturally through conversation, don't ask all at o
 - Product interest (or help them choose)
 - Desired sum assured / coverage amount (in KES)
 - Preferred policy term (years)
-- Monthly or annual premium budget (optional, helpful)
 
 AGE ELIGIBILITY RULES:
 - If prospect's age exceeds the product limit, POLITELY decline for that product and suggest an alternative
-- Always calculate age from DOB before recommending
 
 QUOTE TRIGGER:
 - When you have: name, DOB, gender, smoker status, product, and sum assured → output exactly: [READY_FOR_QUOTE]
-- Before triggering, confirm: "Let me now prepare your personalised quote…"
 
 PROSPECT DATA EXTRACTION:
 - Whenever you learn something new, output a JSON block like: [DATA:{"name":"John","dob":"1985-03-15","gender":"male","smoker":"no","product":"Term Life","sumAssured":"5000000","term":"20"}]
-- Only include fields you've actually confirmed. Update incrementally.
 
 INELIGIBILITY:
 - If age exceeds limit for chosen product, output: [INELIGIBLE:{"product":"Term Life","age":62,"limit":60,"alternative":"Whole Life"}]
+AGENT_HANDOFF: when prospect agrees to proceed → [AGENT_HANDOFF]`;
 
-AGENT HANDOFF (after close):
-- When prospect agrees to proceed: [AGENT_HANDOFF]
-- Explain that their dedicated Fadhili agent will contact them within 24 hours
+// Mobile drawer functions
+function closeDrawer() {
+  const panel = document.getElementById('leftPanel');
+  const backdrop = document.getElementById('backdrop');
+  if(panel) panel.classList.remove('open');
+  if(backdrop) backdrop.classList.remove('active');
+}
+function openDrawer() {
+  const panel = document.getElementById('leftPanel');
+  const backdrop = document.getElementById('backdrop');
+  if(panel) panel.classList.add('open');
+  if(backdrop) backdrop.classList.add('active');
+}
+function initMobileDrawer() {
+  const toggle = document.getElementById('menuToggle');
+  const backdrop = document.getElementById('backdrop');
+  if(toggle) {
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const panel = document.getElementById('leftPanel');
+      if(panel.classList.contains('open')) closeDrawer();
+      else openDrawer();
+    });
+  }
+  if(backdrop) backdrop.addEventListener('click', closeDrawer);
+  window.addEventListener('resize', () => {
+    if(window.innerWidth > 768) closeDrawer();
+  });
+}
 
-Remember: You are representing a trusted, established Kenyan insurance brand. Be professional, caring, and helpful.`;
-
-// ── Start ──
 function startChat() {
   document.getElementById('welcome').classList.add('hidden');
   setTimeout(() => {
@@ -618,14 +483,8 @@ function startChat() {
   }, 400);
 }
 
-// ── Messaging ──
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
-}
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
 
 async function sendMsg() {
   const inp = document.getElementById('chat-input');
@@ -642,32 +501,20 @@ async function getBotReply() {
   document.getElementById('send-btn').disabled = true;
   showTyping();
   try {
-    console.log('SYSTEM------------------',SYSTEM);
     const res = await fetch('/api/chat', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    history,
-    system: SYSTEM,
-  })
-});
-
-const data = await res.json();
-
-if (!data.success) {
-  throw new Error(data.error || 'Request failed');
-}
-
-const raw = data.text || "Samahani, I couldn't process that. Please try again.";
-
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ history, system: SYSTEM })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Request failed');
+    const raw = data.text || "Samahani, I couldn't process that. Please try again.";
     history.push({ role: 'assistant', content: raw });
     hideTyping();
     processReply(raw);
   } catch(e) {
     hideTyping();
-    console.error('ERROR------------------',e);
+    console.error(e);
     addBotMsg("I'm experiencing a brief connection issue. Please try again in a moment.");
   } finally {
     busy = false;
@@ -676,7 +523,6 @@ const raw = data.text || "Samahani, I couldn't process that. Please try again.";
 }
 
 function processReply(raw) {
-  // Extract DATA block
   const dataMatch = raw.match(/\[DATA:(\{[^}]+\})\]/);
   if (dataMatch) {
     try {
@@ -685,13 +531,11 @@ function processReply(raw) {
       updateProspectPanel();
     } catch(e) {}
   }
-
-  // Check for special signals
   if (raw.includes('[READY_FOR_QUOTE]')) {
     const clean = raw.replace(/\[DATA:[^\]]+\]/g,'').replace('[READY_FOR_QUOTE]','').trim();
     if (clean) addBotMsg(clean);
     setStage(3);
-    setTimeout(() => showQuote(), 900);
+    setTimeout(() => showQuote(), 600);
     return;
   }
   if (raw.includes('[INELIGIBLE:')) {
@@ -710,16 +554,12 @@ function processReply(raw) {
     setTimeout(() => showHandoff(), 800);
     return;
   }
-
   const clean = raw.replace(/\[DATA:[^\]]+\]/g,'').trim();
   addBotMsg(clean);
-
-  // Auto-advance stage based on content
-  if (currentStageIdx === 1 && (raw.toLowerCase().includes('let me tell you') || raw.toLowerCase().includes('sounds like') || raw.toLowerCase().includes('perfect product'))) setStage(2);
-  if (currentStageIdx === 2 && (raw.toLowerCase().includes('concern') || raw.toLowerCase().includes('understand') || raw.toLowerCase().includes('worry'))) setStage(4);
+  if (currentStageIdx === 1 && (raw.toLowerCase().includes('let me tell you') || raw.toLowerCase().includes('perfect product'))) setStage(2);
+  if (currentStageIdx === 2 && (raw.toLowerCase().includes('concern') || raw.toLowerCase().includes('understand'))) setStage(4);
 }
 
-// ── Quote ──
 function showQuote() {
   const age = prospect.dob ? calcAge(prospect.dob) : '?';
   const sum = prospect.sumAssured ? parseInt(prospect.sumAssured) : 5000000;
@@ -727,50 +567,21 @@ function showQuote() {
   const product = prospect.product || 'Term Life Cover';
   const gender = prospect.gender || 'male';
   const smoker = prospect.smoker === 'yes' || prospect.smoker === 'smoker';
-
-  // Simple illustrative premium calculation
   let basePremium = 0;
   const sumM = sum / 1000000;
-  if (product.toLowerCase().includes('term')) {
-    basePremium = sumM * (gender === 'female' ? 1800 : 2200) * (parseInt(term)/20);
-  } else if (product.toLowerCase().includes('endow')) {
-    basePremium = sumM * 8500 + (sum * 0.025);
-  } else if (product.toLowerCase().includes('edu')) {
-    basePremium = sum * 0.035;
-  } else if (product.toLowerCase().includes('whole')) {
-    basePremium = sumM * 12000;
-  } else if (product.toLowerCase().includes('pension') || product.toLowerCase().includes('retire')) {
-    basePremium = sum * 0.04;
-  } else {
-    basePremium = sum * 0.025;
-  }
+  if (product.toLowerCase().includes('term')) basePremium = sumM * (gender === 'female' ? 1800 : 2200) * (parseInt(term)/20);
+  else if (product.toLowerCase().includes('endow')) basePremium = sumM * 8500 + (sum * 0.025);
+  else if (product.toLowerCase().includes('edu')) basePremium = sum * 0.035;
+  else if (product.toLowerCase().includes('whole')) basePremium = sumM * 12000;
+  else if (product.toLowerCase().includes('pension')) basePremium = sum * 0.04;
+  else basePremium = sum * 0.025;
   if (smoker) basePremium *= 1.25;
   basePremium = Math.round(basePremium / 100) * 100;
   const annualPrem = basePremium * 12;
-
   const msgs = document.getElementById('messages');
   const wrap = document.createElement('div');
   wrap.className = 'msg system-msg';
-  wrap.innerHTML = `
-    <div class="card quote-card">
-      <div class="card-eyebrow">📋 Your Personalised Quote</div>
-      <div class="card-headline">${product}</div>
-      <div class="card-sub">Prepared for ${prospect.name || 'Valued Client'} · ${new Date().toLocaleDateString('en-KE',{day:'numeric',month:'long',year:'numeric'})}</div>
-      <div class="quote-table">
-        <div class="quote-row"><span class="ql">Sum Assured</span><span class="qr">KES ${parseInt(sum).toLocaleString()}</span></div>
-        <div class="quote-row"><span class="ql">Policy Term</span><span class="qr">${term} Years</span></div>
-        <div class="quote-row"><span class="ql">Entry Age</span><span class="qr">${age} Years</span></div>
-        <div class="quote-row"><span class="ql">Gender / Smoker</span><span class="qr">${gender.charAt(0).toUpperCase()+gender.slice(1)} / ${smoker?'Smoker':'Non-Smoker'}</span></div>
-        <div class="quote-row"><span class="ql">Monthly Premium</span><span class="qr">KES ${basePremium.toLocaleString()}</span></div>
-        <div class="quote-row total"><span class="ql">Annual Premium</span><span class="qr">KES ${annualPrem.toLocaleString()}</span></div>
-      </div>
-      <div class="card-note">⚠️ This is an indicative quote for illustration purposes. Final premiums are subject to Fadhili's underwriting assessment and official rate tables.</div>
-      <div class="card-actions">
-        <button class="btn btn-gold" onclick="acceptQuote()">I'm Interested — Proceed</button>
-        <button class="btn btn-outline" onclick="askQuestion()">I Have a Question</button>
-        <button class="btn btn-outline" onclick="adjustQuote()">Adjust My Cover</button>
-      </div>
-    </div>`;
+  wrap.innerHTML = `<div class="card quote-card"><div class="card-eyebrow">📋 Your Personalised Quote</div><div class="card-headline">${esc(product)}</div><div class="card-sub">Prepared for ${prospect.name || 'Valued Client'} · ${new Date().toLocaleDateString('en-KE')}</div><div class="quote-table"><div class="quote-row"><span class="ql">Sum Assured</span><span class="qr">KES ${parseInt(sum).toLocaleString()}</span></div><div class="quote-row"><span class="ql">Policy Term</span><span class="qr">${term} Years</span></div><div class="quote-row"><span class="ql">Entry Age</span><span class="qr">${age} Years</span></div><div class="quote-row"><span class="ql">Gender / Smoker</span><span class="qr">${gender.charAt(0).toUpperCase()+gender.slice(1)} / ${smoker?'Smoker':'Non-Smoker'}</span></div><div class="quote-row"><span class="ql">Monthly Premium</span><span class="qr">KES ${basePremium.toLocaleString()}</span></div><div class="quote-row total"><span class="ql">Annual Premium</span><span class="qr">KES ${annualPrem.toLocaleString()}</span></div></div><div class="card-note">⚠️ This is an indicative quote for illustration purposes. Final premiums subject to underwriting.</div><div class="card-actions"><button class="btn btn-gold" onclick="acceptQuote()">I'm Interested — Proceed</button><button class="btn btn-outline" onclick="askQuestion()">I Have a Question</button><button class="btn btn-outline" onclick="adjustQuote()">Adjust My Cover</button></div></div>`;
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
   setStage(3);
@@ -778,176 +589,44 @@ function showQuote() {
   showToast('Quote generated successfully');
 }
 
-function acceptQuote() {
-  addUserMsg("This looks great! I'm interested in proceeding.");
-  history.push({ role: 'user', content: "I'm happy with the quote and would like to proceed." });
-  setStage(5);
-  getBotReply();
-}
+function acceptQuote() { addUserMsg("This looks great! I'm interested in proceeding."); history.push({ role: 'user', content: "I'm happy with the quote and would like to proceed." }); setStage(5); getBotReply(); }
+function askQuestion() { addUserMsg("I have a few questions about this quote."); history.push({ role: 'user', content: "I have some questions before I decide." }); setStage(4); getBotReply(); }
+function adjustQuote() { addUserMsg("Can we adjust the coverage amount or term?"); history.push({ role: 'user', content: "I'd like to explore different coverage amounts or policy terms." }); getBotReply(); }
 
-function askQuestion() {
-  addUserMsg("I have a few questions about this quote.");
-  history.push({ role: 'user', content: "I have some questions before I decide." });
-  setStage(4);
-  getBotReply();
-}
-
-function adjustQuote() {
-  addUserMsg("Can we adjust the coverage amount or term?");
-  history.push({ role: 'user', content: "I'd like to explore different coverage amounts or policy terms." });
-  getBotReply();
-}
-
-// ── Ineligible ──
 function showIneligible(info) {
   const msgs = document.getElementById('messages');
   const wrap = document.createElement('div');
   wrap.className = 'msg system-msg';
-  wrap.innerHTML = `
-    <div class="ineligible-card">
-      <div style="font-size:13px; font-weight:600; color:var(--danger); margin-bottom:8px;">Age Eligibility Notice</div>
-      <div style="font-size:14px; color:var(--text); margin-bottom:10px;">At age <strong>${info.age}</strong>, the maximum entry age for <strong>${info.product}</strong> is <strong>${info.limit} years</strong>.</div>
-      ${info.alternative ? `<div style="font-size:13px; color:var(--text2);">✅ Good news — you may still qualify for <strong style="color:var(--lion-gold-light)">${info.alternative}</strong>, which has a higher entry age. Would you like me to explore this option?</div>
-      <div class="card-actions" style="margin-top:12px">
-        <button class="btn btn-gold" onclick="exploreAlternative('${info.alternative}')">Yes, tell me more</button>
-      </div>` : ''}
-    </div>`;
+  wrap.innerHTML = `<div class="ineligible-card"><div style="font-size:13px; font-weight:600; color:var(--danger); margin-bottom:8px;">Age Eligibility Notice</div><div style="font-size:14px; margin-bottom:10px;">At age <strong>${info.age}</strong>, the max entry for <strong>${info.product}</strong> is <strong>${info.limit} years</strong>.</div>${info.alternative ? `<div style="font-size:13px;">✅ Good news — you may qualify for <strong style="color:var(--lion-gold-light)">${info.alternative}</strong>. Would you like to explore this?</div><div class="card-actions" style="margin-top:12px"><button class="btn btn-gold" onclick="exploreAlternative('${info.alternative}')">Yes, tell me more</button></div>` : ''}</div>`;
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
 }
+function exploreAlternative(product) { addUserMsg(`Yes, please tell me about the ${product} option.`); history.push({ role: 'user', content: `Please tell me more about ${product} as an alternative.` }); getBotReply(); }
 
-function exploreAlternative(product) {
-  addUserMsg(`Yes, please tell me about the ${product} option.`);
-  history.push({ role: 'user', content: `Please tell me more about ${product} as an alternative.` });
-  getBotReply();
-}
-
-// ── Handoff ──
 function showHandoff() {
   const msgs = document.getElementById('messages');
   const wrap = document.createElement('div');
   wrap.className = 'msg system-msg';
-  wrap.innerHTML = `
-    <div class="card success-card">
-      <div class="card-eyebrow">🎉 Application Initiated</div>
-      <div class="card-headline">Welcome to Fadhili!</div>
-      <div class="card-sub">Your consultation is complete. Here's what happens next:</div>
-      <div class="quote-table">
-        <div class="quote-row"><span class="ql">📞 Agent Contact</span><span class="qr" style="color:var(--success)">Within 24 hours</span></div>
-        <div class="quote-row"><span class="ql">📄 Proposal Form</span><span class="qr">Sent to your email</span></div>
-        <div class="quote-row"><span class="ql">🏥 Medical Check</span><span class="qr">If required by Fadhili</span></div>
-        <div class="quote-row"><span class="ql">✅ Policy Issuance</span><span class="qr">After underwriting</span></div>
-      </div>
-      <div class="card-note">Your dedicated Fadhili agent will review your application and guide you through the remaining steps. Asante sana for choosing Fadhili! 🦁</div>
-      <div class="card-actions">
-        <button class="btn btn-green" onclick="showToast('Agent notified! You will be contacted soon.')">✓ Confirmed</button>
-      </div>
-    </div>`;
+  wrap.innerHTML = `<div class="card success-card"><div class="card-eyebrow">🎉 Application Initiated</div><div class="card-headline">Welcome to Fadhili!</div><div class="card-sub">Your consultation is complete. Here's what happens next:</div><div class="quote-table"><div class="quote-row"><span class="ql">📞 Agent Contact</span><span class="qr" style="color:var(--success)">Within 24 hours</span></div><div class="quote-row"><span class="ql">📄 Proposal Form</span><span class="qr">Sent to your email</span></div><div class="quote-row"><span class="ql">🏥 Medical Check</span><span class="qr">If required</span></div></div><div class="card-note">Your dedicated Fadhili agent will review your application. Asante sana for choosing Fadhili! 🦁</div><div class="card-actions"><button class="btn btn-green" onclick="showToast('Agent notified!')">✓ Confirmed</button></div></div>`;
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
   document.getElementById('stage-chip').textContent = 'Closed';
   document.getElementById('stage-chip').classList.add('closed');
-  showToast('Lead closed · Agent notified · 🦁');
+  showToast('Lead closed · Agent notified');
 }
 
-// ── UI Helpers ──
-function addBotMsg(text) {
-  const msgs = document.getElementById('messages');
-  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  const wrap = document.createElement('div');
-  wrap.className = 'msg bot';
-  wrap.innerHTML = `
-    <div class="msg-av bot-av">🦁</div>
-    <div>
-      <div class="bubble">${esc(text)}</div>
-      <div class="msg-time">Simba · ${t}</div>
-    </div>`;
-  msgs.appendChild(wrap);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function addUserMsg(text) {
-  const msgs = document.getElementById('messages');
-  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  const wrap = document.createElement('div');
-  wrap.className = 'msg user';
-  wrap.innerHTML = `
-    <div class="msg-av user-av">YOU</div>
-    <div>
-      <div class="bubble">${esc(text)}</div>
-      <div class="msg-time">${t}</div>
-    </div>`;
-  msgs.appendChild(wrap);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function showTyping() {
-  const msgs = document.getElementById('messages');
-  const wrap = document.createElement('div');
-  wrap.className = 'typing-wrap'; wrap.id = 'typing';
-  wrap.innerHTML = `<div class="msg-av bot-av">🦁</div><div class="typing-bubble"><span></span><span></span><span></span></div>`;
-  msgs.appendChild(wrap);
-  msgs.scrollTop = msgs.scrollHeight;
-}
+function addBotMsg(text) { const msgs = document.getElementById('messages'); const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); const wrap = document.createElement('div'); wrap.className = 'msg bot'; wrap.innerHTML = `<div class="msg-av bot-av">🦁</div><div><div class="bubble">${esc(text)}</div><div class="msg-time">Simba · ${t}</div></div>`; msgs.appendChild(wrap); msgs.scrollTop = msgs.scrollHeight; }
+function addUserMsg(text) { const msgs = document.getElementById('messages'); const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); const wrap = document.createElement('div'); wrap.className = 'msg user'; wrap.innerHTML = `<div class="msg-av user-av">YOU</div><div><div class="bubble">${esc(text)}</div><div class="msg-time">${t}</div></div>`; msgs.appendChild(wrap); msgs.scrollTop = msgs.scrollHeight; }
+function showTyping() { const msgs = document.getElementById('messages'); const wrap = document.createElement('div'); wrap.className = 'typing-wrap'; wrap.id = 'typing'; wrap.innerHTML = `<div class="msg-av bot-av">🦁</div><div class="typing-bubble"><span></span><span></span><span></span></div>`; msgs.appendChild(wrap); msgs.scrollTop = msgs.scrollHeight; }
 function hideTyping() { document.getElementById('typing')?.remove(); }
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+function setStage(idx) { currentStageIdx = idx; const rows = document.querySelectorAll('.stage-row'); rows.forEach((r,i)=>{ r.classList.remove('done','active'); if(i<idx) r.classList.add('done'); else if(i===idx) r.classList.add('active'); }); document.getElementById('stage-chip').textContent = STAGES[idx] || 'In Progress'; }
+function updateProspectPanel() { const set=(id,val)=>{ const el=document.getElementById(id); if(el&&val) el.innerHTML=val; }; if(prospect.name) set('pf-name', prospect.name); if(prospect.dob) set('pf-dob', prospect.dob + ' (Age ' + calcAge(prospect.dob) + ')'); if(prospect.gender) set('pf-gender', prospect.gender.charAt(0).toUpperCase()+prospect.gender.slice(1)); if(prospect.smoker) set('pf-smoker', (prospect.smoker==='yes'||prospect.smoker==='smoker')?'🚬 Smoker':'✅ Non-Smoker'); if(prospect.product) set('pf-product', prospect.product); if(prospect.sumAssured) set('pf-sum', 'KES ' + parseInt(prospect.sumAssured).toLocaleString()); if(prospect.term) set('pf-term', prospect.term + ' Years'); }
+function highlightProduct(product) { if(!product) return; const map={ 'term':'pill-term','endow':'pill-endow','edu':'pill-edu','whole':'pill-whole','pension':'pill-pension' }; for(const [k,id] of Object.entries(map)) if(product.toLowerCase().includes(k)) { document.querySelectorAll('.product-pill').forEach(p=>p.classList.remove('selected')); document.getElementById(id)?.classList.add('selected'); break; } }
+function calcAge(dob) { const b=new Date(dob); const now=new Date(); let age=now.getFullYear()-b.getFullYear(); const m=now.getMonth()-b.getMonth(); if(m<0||(m===0&&now.getDate()<b.getDate())) age--; return age; }
+function showToast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-msg').textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3500); }
 
-function esc(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
-
-function setStage(idx) {
-  currentStageIdx = idx;
-  const rows = document.querySelectorAll('.stage-row');
-  rows.forEach((r, i) => {
-    r.classList.remove('done','active');
-    if (i < idx) r.classList.add('done');
-    else if (i === idx) r.classList.add('active');
-  });
-  document.getElementById('stage-chip').textContent = STAGES[idx] || 'In Progress';
-}
-
-function updateProspectPanel() {
-  const set = (id, val) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (val) { el.innerHTML = val; }
-  };
-  if (prospect.name) set('pf-name', prospect.name);
-  if (prospect.dob) set('pf-dob', prospect.dob + ' (Age ' + calcAge(prospect.dob) + ')');
-  if (prospect.gender) set('pf-gender', prospect.gender.charAt(0).toUpperCase()+prospect.gender.slice(1));
-  if (prospect.smoker) set('pf-smoker', prospect.smoker === 'yes' || prospect.smoker === 'smoker' ? '🚬 Smoker' : '✅ Non-Smoker');
-  if (prospect.product) set('pf-product', prospect.product);
-  if (prospect.sumAssured) set('pf-sum', 'KES ' + parseInt(prospect.sumAssured).toLocaleString());
-  if (prospect.term) set('pf-term', prospect.term + ' Years');
-}
-
-function highlightProduct(product) {
-  if (!product) return;
-  const map = { 'term': 'pill-term', 'endow': 'pill-endow', 'edu': 'pill-edu', 'whole': 'pill-whole', 'pension': 'pill-pension', 'retire': 'pill-pension' };
-  for (const [k, id] of Object.entries(map)) {
-    if (product.toLowerCase().includes(k)) {
-      document.querySelectorAll('.product-pill').forEach(p => p.classList.remove('selected'));
-      document.getElementById(id)?.classList.add('selected');
-      break;
-    }
-  }
-}
-
-function calcAge(dob) {
-  const b = new Date(dob); const now = new Date();
-  let age = now.getFullYear() - b.getFullYear();
-  const m = now.getMonth() - b.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
-  return age;
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove('show'), 3500);
-}
+initMobileDrawer();
 </script>
 </body>
 </html>
