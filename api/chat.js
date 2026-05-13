@@ -1,15 +1,3 @@
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export const config = {
-  api: {
-    bodyParser: true,
-  },
-};
-
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
@@ -18,30 +6,41 @@ export default async function handler(req, res) {
 
     const { history = [], system = "" } = req.body || {};
 
-    if (!process.env.OPENAI_API_KEY) {
+    const messages = [
+      { role: "system", content: system },
+      ...history,
+    ];
+
+    const response = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.ZAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "glm-4.5-flash",
+        messages,
+        temperature: 0.7,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
       return res.status(500).json({
         success: false,
-        error: "Missing OPENAI_API_KEY in environment variables",
+        error: data,
       });
     }
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        { role: "system", content: system },
-        ...history,
-      ],
-      temperature: 0.7,
-    });
+    const text = data.choices?.[0]?.message?.content;
 
     return res.status(200).json({
       success: true,
-      text: response.choices[0].message.content,
+      text,
     });
 
   } catch (err) {
-    console.error("OpenAI Error:", err);
-
     return res.status(500).json({
       success: false,
       error: err.message,
